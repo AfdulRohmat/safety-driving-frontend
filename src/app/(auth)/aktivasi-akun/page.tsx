@@ -31,7 +31,9 @@ import {
     InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
-import { useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useState } from "react"
+import { fetchApi } from "@/utils/api"
 
 
 const FormSchema = z.object({
@@ -42,7 +44,10 @@ const FormSchema = z.object({
 
 
 export default function AktivasiAkun() {
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
+    const searchParams = useSearchParams();
+    const email = searchParams.get('email');
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -51,17 +56,54 @@ export default function AktivasiAkun() {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        setLoading(true)
+        const { data: dataResponse, errorResponse } = await fetchApi("/auth/activate-account", {
+            method: 'POST',
+            body: {
+                'email': email,
+                'activationCode': data.otp
+            }
         })
 
-        router.push('/login')
+        if (dataResponse) {
+            setLoading(false)
+            toast({
+                title: "Aktivasi Akun berhasil. Silahkan Login",
+            })
+
+            router.push('/login')
+        } else {
+            setLoading(false)
+            toast({
+                title: "Aktivasi Akun Gagal.",
+                description: "Email sudah terdaftar atau kode aktivasi tidak valid."
+            })
+        }
+    }
+
+    async function doResendActivationCode() {
+        setLoading(true)
+        const { data: dataResponse, errorResponse } = await fetchApi("/auth/resend-activation-code", {
+            method: 'POST',
+            body: {
+                'email': email,
+            }
+        })
+
+        if (dataResponse) {
+            setLoading(false)
+            toast({
+                title: "Kode Aktivasi Akun berhasil dikrim ulang. Silahkan cek email anda",
+            })
+            
+        } else {
+            setLoading(false)
+            toast({
+                title: "Kode Aktivasi Akun gagal dikrim ulang",
+                description: "Email sudah terdaftar atau email tidak valid."
+            })
+        }
     }
 
     return (
@@ -100,7 +142,11 @@ export default function AktivasiAkun() {
                                 )}
                             />
 
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" disabled={loading}>Submit</Button>
+
+                            <p onClick={() => doResendActivationCode()} className="font-semibold hover:cursor-pointer hover:underline">
+                                Kirim ulang kode aktivasi
+                            </p>
                         </form>
                     </Form>
                 </CardContent>

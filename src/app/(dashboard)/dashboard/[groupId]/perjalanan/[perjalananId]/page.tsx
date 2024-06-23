@@ -25,8 +25,13 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "@/components/ui/use-toast"
-import { monitoringColumns } from "./(dataTable)/monitoringColumns";
+import { monitoringTripColumns } from "./(dataTable)/monitoringTripColumns";
 import { fetchApi } from "@/utils/api";
+import { ProsesPerjalananEnum } from "@/utils/perjalananEnum";
+import { monitoringFaceColumns } from "./(dataTable)/monitoringFaceColumns";
+import useWebSocket from "../(hooks)/useWebSocket ";
+import { faceMonitoringHandlers, tripMonitoringHandlers } from "./websocket-event-handler/websocket-event-handler";
+import useCustomWebSocket from "../(hooks)/useWebSocketReactHook";
 
 export default function DetailPerjalanan() {
     const [map, setMap] = useState<any>(null)
@@ -46,7 +51,16 @@ export default function DetailPerjalanan() {
     const originRef: any = useRef()
     const destiantionRef: any = useRef()
 
-    const dataMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-trip?tripToken=${params.perjalananId}`);
+    const dataTripMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-trip?tripToken=${params.perjalananId}`);
+    const dataFaceMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-face?tripToken=${params.perjalananId}`);
+
+    // TRY WEBSOCKET
+    // WebSocket connections
+    // const { socket, messages: tripMonitoringMessages } = useWebSocket('/trip-monitoring', tripMonitoringHandlers);
+    // const { messages: faceMonitoringMessages } = useWebSocket('/face-monitoring', faceMonitoringHandlers);
+
+
+    const dataMonitoringTripColumns = monitoringTripColumns();
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY as string,
@@ -85,16 +99,28 @@ export default function DetailPerjalanan() {
         destiantionRef.current.value = ''
     }
 
-    function doEndMonitoring() {
-        dataMonitoring.closeConnection();
-
-        // API UNTUK MENGUBAH STATUS PERJALANAN MENJADI SELESAI
-
-
-        toast({
-            title: "Perjalanan Berakhir",
-            description: "Proses monitoring berakhir, tunggu beberapa saat untuk mendapatkan laporan perjalanan"
+    async function doEndMonitoring() {
+        const { data } = await fetchApi("/trips/change-status", {
+            method: "POST",
+            body: {
+                "tripToken": params.perjalananId,
+                "status": ProsesPerjalananEnum.SELESAI
+            }
         })
+        if (data) {
+            // dataTripMonitoring.closeConnection();
+            // dataFaceMonitoring.closeConnection();
+
+            toast({
+                title: "Perjalanan Berakhir",
+                description: "Proses monitoring berakhir, tunggu beberapa saat untuk mendapatkan laporan perjalanan"
+            })
+        } else {
+            toast({
+                title: "Gagal Menghentikan Proses Monitoring",
+                description: "Terjadi kesalahan. Gagal Menghentikan Proses Monitoring"
+            })
+        }
     }
 
     async function getDetailTrip() {
@@ -122,8 +148,8 @@ export default function DetailPerjalanan() {
     }, []);
 
     useEffect(() => {
-        if (dataMonitoring.data.length !== 0) {
-            const recentPosition = dataMonitoring.data[dataMonitoring.data.length - 1]
+        if (dataTripMonitoring.data.length !== 0) {
+            const recentPosition: any = dataTripMonitoring.data[dataTripMonitoring.data.length - 1]
             console.log({
                 lat: parseFloat(recentPosition.latitude),
                 lng: parseFloat(recentPosition.longitude)
@@ -135,7 +161,7 @@ export default function DetailPerjalanan() {
             })
         }
 
-    }, [dataMonitoring.data])
+    }, [dataTripMonitoring.data])
 
     useEffect(() => {
         if (map) {
@@ -156,8 +182,9 @@ export default function DetailPerjalanan() {
         <div className="container flex flex-col gap-6 py-4 h-screen">
             {/* Nama Menu */}
             <div className='flex justify-between'>
-                <h1 className="text-xl font-semibold">Monitoring Perjalanan</h1>
-                {dataMonitoring.isClose ? <div className="text-red-500">Perjalanan Sudah Diakhiri. Proses Monitoring Berhenti</div> : (
+                <h1 className="text-2xl font-semibold">Monitoring Perjalanan</h1>
+                {dataTripMonitoring.isClose ? <div className="text-red-500">Perjalanan Sudah Diakhiri. Proses Monitoring Berhenti</div> : (
+
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button className="bg-red-500 hover:bg-red-600">Akhiri Perjalanan</Button>
@@ -212,9 +239,14 @@ export default function DetailPerjalanan() {
                     </GoogleMap>
                 </div>
 
-                {/* Data Table */}
-                <MonitoringTable columns={monitoringColumns} data={dataMonitoring.data} />
+                {/* Data Table Monitoring Perjalanan*/}
+                <div className="font-semibold text-xl mt-6 flex w-full justify-center">Monitoring Status Perjalanan</div>
+                <MonitoringTable columns={dataMonitoringTripColumns} data={dataTripMonitoring.data} />
 
+                {/* Data Table Monitoring Perjalanan*/}
+                <div className="font-semibold text-xl mt-6 flex w-full justify-center">Monitoring Deteksi Wajah</div>
+                <MonitoringTable columns={monitoringFaceColumns} data={dataFaceMonitoring.data} />
+                <div className="mb-4"></div>
             </div>
 
         </div>

@@ -19,6 +19,7 @@ export const fetchApi = async (endpoint: string, { method = 'GET', body }: ApiOp
     let status = null
     let data = null
     let error = null
+    let errorResponse = null
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
@@ -32,15 +33,18 @@ export const fetchApi = async (endpoint: string, { method = 'GET', body }: ApiOp
             data = responseData.data
         } else {
             error = responseData.error
+            errorResponse = responseData
         }
         status = responseData.statusCode
 
-        console.log(`error ${endpoint} :`, responseData.statusCode)
+        console.log(`${endpoint} :`, responseData.statusCode)
 
     } catch (error: any) {
         error = error
     }
 
-    return { status, data, error };
+    return { status, data, error, errorResponse };
 
 };
+
+

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
                 />
             </div>
 
-            <div className="rounded-md border">
+            <ScrollArea className="h-[400px] rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
                         )}
                     </TableBody>
                 </Table>
-            </div>
+            </ScrollArea>
         </div>
 
     )

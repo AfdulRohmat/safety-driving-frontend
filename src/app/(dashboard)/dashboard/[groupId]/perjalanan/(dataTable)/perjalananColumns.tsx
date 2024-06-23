@@ -26,9 +26,12 @@ import { User } from "@/utils/globalInterface"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { fetchApi } from "@/utils/api"
+import { ProsesPerjalananEnum } from "@/utils/perjalananEnum"
 
 export type Perjalanan = {
     id: string,
+    jadwalPerjalanan: string,
     alamatAwal: string,
     latitudeAwal: string,
     longitudeAwal: string,
@@ -41,7 +44,21 @@ export type Perjalanan = {
     driver: User,
 }
 
-export const perjalananColumns: ColumnDef<Perjalanan>[] = [
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+};
+
+const rolesCanStartMonitoring = [
+    'ROLE_ADMIN_GROUP',
+    'ROLE_DRIVER',
+    'ROLE_COMPANY'
+]
+
+export const perjalananColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] => [
     {
         header: 'No.',
         accessorFn: (_row, i) => i + 1, // Index column
@@ -51,6 +68,11 @@ export const perjalananColumns: ColumnDef<Perjalanan>[] = [
         header: 'Driver',
         accessorFn: (row) => row.driver.username,
         id: 'username',
+    },
+    {
+        header: 'Jadwal Perjalanan',
+        accessorFn: (row) => formatDate(row.jadwalPerjalanan),
+        id: 'jadwalPerjalanan',
     },
     {
         header: 'Alamat Awal',
@@ -85,33 +107,52 @@ export const perjalananColumns: ColumnDef<Perjalanan>[] = [
             const [open, setOpen] = useState(false)
             const router = useRouter()
 
-            function goToMonitoring() {
-                router.push(`/dashboard/1/perjalanan/${row.getValue("tripToken")}`)
+            async function goToMonitoring() {
+                // Change Status
+                const { data } = await fetchApi("/trips/change-status", {
+                    method: "POST",
+                    body: {
+                        "tripToken": row.getValue("tripToken"),
+                        "status": ProsesPerjalananEnum.DALAM_PERJALANAN
+                    }
+                })
+                if (data) {
+                    router.push(`/dashboard/1/perjalanan/${row.getValue("tripToken")}`)
+                }
             }
 
             return (
                 <div>
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
+                        {rolesCanStartMonitoring.includes(userJoinedGrup.role) ?
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger> :
+                            <div></div>}
+
                         <DropdownMenuContent align="end" >
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            {row.getValue("status") === 'Selesai' ?
+                                <div></div> :
+                                <DropdownMenuItem className="p-4" onClick={() => setOpen(true)}>
+                                    Mulai Perjalanan
+                                </DropdownMenuItem>
+                            }
 
-                            <DropdownMenuItem className="p-4" onClick={() => setOpen(true)}>
-                                Mulai Perjalanan
-                                {/* <Link href={`/dashboard/1/perjalanan/${row.getValue("tripToken")}`}>
-                                </Link> */}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-400 focus:text-red-400 p-4" >
-                                Hapus Perjalanan
-                            </DropdownMenuItem>
+                            {userJoinedGrup.role === 'ROLE_ADMIN_GROUP' ?
+                                <DropdownMenuItem className="text-red-400 focus:text-red-400 p-4" >
+                                    Hapus Perjalanan
+                                </DropdownMenuItem> :
+                                <div></div>
+                            }
+
                         </DropdownMenuContent>
                     </DropdownMenu>
 
+                    {/* DIALOG PROCESS PERJALANAN */}
                     <AlertDialog open={open}>
                         <AlertDialogContent>
                             <AlertDialogHeader>

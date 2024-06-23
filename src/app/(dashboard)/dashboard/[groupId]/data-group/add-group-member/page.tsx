@@ -47,12 +47,15 @@ import Cookies from 'js-cookie';
 import { fetchApi } from "@/utils/api"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const roles = [
-    { label: "Driver", value: "Driver" },
-    { label: "Family", value: "Family" },
-    { label: "Company", value: "Company" },
-    { label: "Paramedic", value: "Paramedic" },
+export const groupRoles = [
+    { label: "Driver", value: "ROLE_DRIVER" },
+    { label: "Company", value: "ROLE_COMPANY" },
+    { label: "Family", value: "ROLE_FAMILY" },
+    { label: "Medical Party", value: "ROLE_MEDIC" },
+    { label: "KNKT", value: "ROLE_KNKT" },
+    { label: "Admin", value: "ROLE_ADMIN_GROUP" },
 ] as const
+
 
 const FormSchema = z.object({
     user: z.string().min(1, {
@@ -217,7 +220,7 @@ export default function AddGroupMember() {
                                                             )}
                                                         >
                                                             {field.value
-                                                                ? roles.find(
+                                                                ? groupRoles.find(
                                                                     (role) => role.value === field.value
                                                                 )?.label
                                                                 : "Pilih Role"}
@@ -231,7 +234,7 @@ export default function AddGroupMember() {
                                                         <CommandEmpty>No language found.</CommandEmpty>
                                                         <CommandGroup>
                                                             <CommandList>
-                                                                {roles.map((role) => (
+                                                                {groupRoles.map((role) => (
                                                                     <CommandItem
                                                                         value={role.label}
                                                                         key={role.value}

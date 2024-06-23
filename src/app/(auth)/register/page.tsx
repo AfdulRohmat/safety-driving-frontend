@@ -25,7 +25,9 @@ import {
 } from "@/components/ui/form"
 import { toast } from "@/components/ui/use-toast"
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useState } from "react"
+import { fetchApi } from "@/utils/api"
+import { useRouter } from "next/navigation"
 
 const FormSchema = z.object({
     username: z.string().min(2, {
@@ -42,6 +44,7 @@ const FormSchema = z.object({
 })
 
 export default function Register() {
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -53,9 +56,32 @@ export default function Register() {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        router.push('/aktivasi-akun')
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        setLoading(true)
+        const { data: dataResponse, errorResponse } = await fetchApi("/auth/register", {
+            method: 'POST',
+            body: {
+                'username': data.username,
+                'email': data.email,
+                'password': data.password
+            }
+        })
 
+        if (dataResponse) {
+            setLoading(false)
+            toast({
+                title: "Register berhasil",
+            })
+
+            router.push(`/aktivasi-akun?email=${data.email}`);
+
+        } else {
+            setLoading(false)
+            toast({
+                title: "Register Gagal.",
+                description: "Email sudah terdaftar atau tidak valid."
+            })
+        }
     }
 
     return (

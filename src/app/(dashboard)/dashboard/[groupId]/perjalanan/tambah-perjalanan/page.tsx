@@ -25,7 +25,7 @@ import { toast } from "@/components/ui/use-toast"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Textarea } from "@/components/ui/textarea"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -46,8 +46,14 @@ import { fetchApi } from "@/utils/api"
 import Cookies from 'js-cookie';
 import { Member } from "../../data-group/dataGroupColums"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { format } from "date-fns"
+import { Calendar } from "@/components/ui/calendar"
 
 const FormSchema = z.object({
+    jadwal_perjalanan: z.date({
+        required_error: "jadwal_perjalanan is required.",
+    }),
+
     driver: z.string().min(1, {
         message: "Nama driver must be at least 1 characters.",
     }),
@@ -88,7 +94,7 @@ const FormSchema = z.object({
 
 export default function TambahPerjalanan() {
     const groupId = Cookies.get('groupId')
-    const [members, setMembers] = useState<Member[] | []>([])
+    const [members, setMembers] = useState<Member[] | any>([])
     const [loading, setLoading] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState(0)
 
@@ -103,7 +109,8 @@ export default function TambahPerjalanan() {
             }
         })
         if (data) {
-            setMembers(data.members)
+            const driverMembers = data.members.filter((member: any) => member.role === "ROLE_DRIVER");
+            setMembers(driverMembers)
         }
         setLoading(false);
     }
@@ -131,6 +138,7 @@ export default function TambahPerjalanan() {
         const { data: dataResponse, error } = await fetchApi("/trips/add-trip", {
             method: "POST",
             body: {
+                jadwalPerjalanan: data.jadwal_perjalanan,
                 alamatAwal: data.alamat_awal,
                 latitudeAwal: data.latitude_awal,
                 longitudeAwal: data.longitude_awal,
@@ -189,7 +197,7 @@ export default function TambahPerjalanan() {
                                                         >
                                                             {field.value
                                                                 ? members.find(
-                                                                    (member) => member.user.email === field.value
+                                                                    (member: any) => member.user.email === field.value
                                                                 )?.user.email
                                                                 : "Pilih Driver"}
                                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -202,7 +210,7 @@ export default function TambahPerjalanan() {
                                                         <CommandEmpty>No language found.</CommandEmpty>
                                                         <CommandGroup>
                                                             <CommandList>
-                                                                {members.map((member) => (
+                                                                {members.map((member: any) => (
                                                                     <CommandItem
                                                                         value={member.user.email}
                                                                         key={member.user.id}
@@ -240,6 +248,47 @@ export default function TambahPerjalanan() {
                                     </FormItem>
                                 )}
                             />
+
+                            <FormField
+                                control={form.control}
+                                name="jadwal_perjalanan"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Jadwal Perjalanan</FormLabel>
+                                        <FormControl>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    {/* <Input type="date" placeholder="Jakarta" {...field} /> */}
+                                                    <Button
+                                                        variant={"outline"}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+
+                                        </FormControl>
+                                        <FormDescription>
+                                            Masukan Jadwal Perjalanan
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
 
                             <FormField
                                 control={form.control}
