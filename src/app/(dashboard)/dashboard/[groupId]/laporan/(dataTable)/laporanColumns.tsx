@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Cookies from 'js-cookie';
+import { formatDecimalMinutes } from "@/utils/formatMinutesFns"
+import { formatDateFns } from "@/utils/formatDateFns"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -61,6 +63,21 @@ export const laporanColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] => 
     header: 'Status',
     accessorFn: (row) => row.status,
     id: 'status',
+  },
+  {
+    header: 'Dimulai Pada',
+    accessorFn: (row) => formatDateFns(row.dimulaiPada) + " WIB",
+    id: 'dimulaiPada',
+  },
+  {
+    header: 'Diakhiri Pada',
+    accessorFn: (row) => formatDateFns(row.diakhiriPada) + " WIB",
+    id: 'diakhiriPada',
+  },
+  {
+    header: 'Durasi Perjalanan',
+    accessorFn: (row) => formatDecimalMinutes(row.durasiPerjalanan),
+    id: 'durasiPerjalanan',
   },
   {
     id: "tripToken",

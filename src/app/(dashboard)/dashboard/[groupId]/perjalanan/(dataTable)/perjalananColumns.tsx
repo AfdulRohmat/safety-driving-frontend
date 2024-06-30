@@ -41,6 +41,9 @@ export type Perjalanan = {
     namaKendaraan: string,
     noPolisi: string,
     status: string,
+    dimulaiPada: string,
+    diakhiriPada: string,
+    durasiPerjalanan: string
     driver: User,
 }
 
@@ -159,7 +162,7 @@ export const perjalananColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] 
                                 <AlertDialogTitle>Mulai Monitoring Perjalanan</AlertDialogTitle>
                                 <AlertDialogDescription>
                                     <div className="flex flex-col gap-2">
-                                        <span>Token : {row.getValue("tripToken")}</span>
+                                        <span>Trip Token : {row.getValue("tripToken")}</span>
                                         <span>
                                             Ketika proses monitoring dimulai, driver akan menerima token. Harap pastikan token didaftarkan ke dalam sistem modul
                                         </span>
@@ -168,8 +171,8 @@ export const perjalananColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] 
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => goToMonitoring()}>Continue</AlertDialogAction>
+                                <AlertDialogCancel onClick={() => setOpen(false)}>kembali</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => goToMonitoring()}>Lanjutkan</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

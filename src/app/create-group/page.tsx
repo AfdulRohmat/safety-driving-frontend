@@ -81,7 +81,7 @@ export default function CreateGroup() {
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="icon_group"
                                 render={({ field }) => (
@@ -96,7 +96,7 @@ export default function CreateGroup() {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
 
                             <FormField
                                 control={form.control}

@@ -1,13 +1,18 @@
 import { ColumnDef } from "@tanstack/react-table";
 
+
 export type Monitoring = {
     id: number,
-    heartRate: string,
-    posisiPedalGas: string,
-    latitude: string,
-    longitude: string,
-    rpm: string,
-    kondisiKantuk: string,
+    heartRate: number;
+    latitude: string;
+    longitude: string;
+    kecepatan: number;
+    rpm: number;
+    thurttle: number;
+    sudutPostural: number;
+    kecepatanPostural: number;
+    durasiPostural: number;
+    status: number;
     tripToken: string,
     createdAt: Date,
 }
@@ -25,11 +30,6 @@ export const monitoringTripColumns = (): ColumnDef<Monitoring>[] => [
         id: 'heartRate',
     },
     {
-        header: 'Posisi Pedal Gas',
-        accessorFn: (row) => row.posisiPedalGas,
-        id: 'posisiPedalGas',
-    },
-    {
         header: 'Latitude',
         accessorFn: (row) => row.latitude,
         id: 'latitude',
@@ -40,14 +40,39 @@ export const monitoringTripColumns = (): ColumnDef<Monitoring>[] => [
         id: 'longitude',
     },
     {
-        header: 'Kecepatan (RPM)',
+        header: 'Kecepatan',
+        accessorFn: (row) => row.kecepatan,
+        id: 'kecepatan',
+    },
+    {
+        header: 'RPM',
         accessorFn: (row) => row.rpm,
         id: 'rpm',
     },
     {
-        header: 'Kondisi Kantuk',
-        accessorFn: (row) => row.kondisiKantuk,
-        id: 'levelKantuk',
+        header: 'Thurttle',
+        accessorFn: (row) => row.thurttle,
+        id: 'thurttle',
+    },
+    {
+        header: 'Sudut Postural',
+        accessorFn: (row) => row.sudutPostural,
+        id: 'sudutPostural',
+    },
+    {
+        header: 'Kecepatan Postural',
+        accessorFn: (row) => row.kecepatanPostural,
+        id: 'kecepatanPostural',
+    },
+    {
+        header: 'Durasi Postural',
+        accessorFn: (row) => row.durasiPostural,
+        id: 'durasiPostural',
+    },
+    {
+        header: 'Status',
+        accessorFn: (row) => row.status,
+        id: 'status',
     },
     {
         header: 'Diambil Pada',

@@ -65,9 +65,9 @@ export default function Beranda() {
 
             {/* Card Total Informasi */}
             <div className="w-full grid grid-rows-1 grid-cols-1 md:grid-rows-3 md:grid-cols-3 gap-4">
-                <CardBeranda title="Total KM Perjalanan" desc="20 KM" />
-                <CardBeranda title="Total Jam Perjalanan Dilakukan" desc="24 Jam" />
-                <CardBeranda title="Total Perjalanan Dilakukan" desc="2 Perjalanan" />
+                <CardBeranda title="Total KM Perjalanan" desc="11 KM" />
+                <CardBeranda title="Total Jam Perjalanan Dilakukan" desc="30 Menit" />
+                <CardBeranda title="Total Perjalanan Dilakukan" desc="1 Perjalanan" />
             </div>
 
 

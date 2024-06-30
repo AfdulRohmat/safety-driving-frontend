@@ -90,6 +90,22 @@ const FormSchema = z.object({
         message: "Nama no_polisi must be at least 1 characters.",
     }),
 
+    tinggi_badan_driver: z.string().min(1, {
+        message: "Nama no_polisi must be at least 1 characters.",
+    }),
+
+    berat_badan_driver: z.string().min(1, {
+        message: "Nama no_polisi must be at least 1 characters.",
+    }),
+
+    tekanan_darah_driver: z.string().min(1, {
+        message: "Nama no_polisi must be at least 1 characters.",
+    }),
+
+    riwayat_penyakit_driver: z.string().min(1, {
+        message: "Nama no_polisi must be at least 1 characters.",
+    }),
+
 })
 
 export default function TambahPerjalanan() {
@@ -127,6 +143,10 @@ export default function TambahPerjalanan() {
             longitude_tujuan: "",
             nama_kendaraan: "",
             no_polisi: "",
+            tinggi_badan_driver: "",
+            berat_badan_driver: "",
+            tekanan_darah_driver: "",
+            riwayat_penyakit_driver: ""
         },
     })
 
@@ -149,6 +169,10 @@ export default function TambahPerjalanan() {
                 driverId: selectedUserId,
                 namaKendaraan: data.nama_kendaraan,
                 noPolisi: data.no_polisi,
+                tinggiBadan: data.tinggi_badan_driver,
+                beratBadan: data.berat_badan_driver,
+                tekananDarah: data.tekanan_darah_driver,
+                riwayatPenyakit: data.riwayat_penyakit_driver
             }
         })
 
@@ -248,6 +272,78 @@ export default function TambahPerjalanan() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* tinggi badan, berat badan , tekanan darah*/}
+                            <div className="flex gap-4 w-full justify-between">
+                                <FormField
+                                    control={form.control}
+                                    name="tinggi_badan_driver"
+                                    render={({ field }) => (
+                                        <FormItem className="w-1/2">
+                                            <FormLabel>Tinggi Badan Driver (cm)</FormLabel>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Tentukan Tinggi Badan Driver" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Masukan Tinggi Bada Driver
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="berat_badan_driver"
+                                    render={({ field }) => (
+                                        <FormItem className="w-1/2">
+                                            <FormLabel>Berat Badan Driver (kg)</FormLabel>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Tentukan Berat Badan Driver" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Masukan Berat Badan Driver
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="tekanan_darah_driver"
+                                    render={({ field }) => (
+                                        <FormItem className="w-1/2">
+                                            <FormLabel>Tekanan Darah Driver (mm Hg)</FormLabel>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Tentukan Tekanan Darah Driver : 120 / 80 mmHg" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Masukan Tekanan Darah Driver
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="riwayat_penyakit_driver"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Riwayat Penyakit</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Masukan riwayat penyakit / alergi / kesehatan driver jika ada" {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Masukan riwayat penyakit / alergi / kesehatan driver jika ada
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
 
                             <FormField
                                 control={form.control}

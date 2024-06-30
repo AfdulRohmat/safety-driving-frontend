@@ -39,6 +39,9 @@ export default function DetailPerjalanan() {
     const [centerPosition, setCenterPosition] = useState({
         lat: -7.285066181776727, lng: 112.79615733299998
     })
+    const [destinationPosition, setDestinationPosition] = useState({
+        lat: 0.00, lng: 0.00
+    })
     const [monitoringPosition, setMonitoringPosition] = useState(
         { lat: -7.285066181776727, lng: 112.79615733299998 }
     )
@@ -53,12 +56,6 @@ export default function DetailPerjalanan() {
 
     const dataTripMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-trip?tripToken=${params.perjalananId}`);
     const dataFaceMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-face?tripToken=${params.perjalananId}`);
-
-    // TRY WEBSOCKET
-    // WebSocket connections
-    // const { socket, messages: tripMonitoringMessages } = useWebSocket('/trip-monitoring', tripMonitoringHandlers);
-    // const { messages: faceMonitoringMessages } = useWebSocket('/face-monitoring', faceMonitoringHandlers);
-
 
     const dataMonitoringTripColumns = monitoringTripColumns();
 
@@ -108,8 +105,8 @@ export default function DetailPerjalanan() {
             }
         })
         if (data) {
-            // dataTripMonitoring.closeConnection();
-            // dataFaceMonitoring.closeConnection();
+            dataTripMonitoring.closeConnection();
+            dataFaceMonitoring.closeConnection();
 
             toast({
                 title: "Perjalanan Berakhir",
@@ -126,34 +123,31 @@ export default function DetailPerjalanan() {
     async function getDetailTrip() {
         // params.perjalananId
         setLoading(true);
-        const { data } = await fetchApi(`trips/detail?tripToken=${params.perjalananId}`, {
-            method: "GET",
+        const { data } = await fetchApi(`/trips/detail?tripToken=${params.perjalananId}`, {
+            method: "POST",
         })
+
         if (data) {
             setDetailTrip(data);
             setCenterPosition({
-                lat: data.latitudeAwal,
-                lng: data.longitudeAwal
+                lat: parseFloat(data.latitudeAwal),
+                lng: parseFloat(data.longitudeAwal)
+            })
+            setDestinationPosition({
+                lat: parseFloat(data.latitudeTujuan),
+                lng: parseFloat(data.longitudeTujuan)
             })
         }
         setLoading(false);
     }
 
     useEffect(() => {
-        // var start = new google.maps.LatLng(-7.285066181776727, 112.79615733299998);
-        // var end = new google.maps.LatLng(-7.290297579546484, 112.79637586595679);
         getDetailTrip()
-        // calculateRoute();
-
     }, []);
 
     useEffect(() => {
         if (dataTripMonitoring.data.length !== 0) {
             const recentPosition: any = dataTripMonitoring.data[dataTripMonitoring.data.length - 1]
-            console.log({
-                lat: parseFloat(recentPosition.latitude),
-                lng: parseFloat(recentPosition.longitude)
-            })
 
             setMonitoringPosition({
                 lat: parseFloat(recentPosition.latitude),
@@ -232,10 +226,8 @@ export default function DetailPerjalanan() {
                     >
                         <Marker position={centerPosition} />
                         <Marker position={monitoringPosition} />
+                        <Marker position={destinationPosition} />
 
-                        {directionsResponse && (
-                            <DirectionsRenderer directions={directionsResponse} />
-                        )}
                     </GoogleMap>
                 </div>
 
