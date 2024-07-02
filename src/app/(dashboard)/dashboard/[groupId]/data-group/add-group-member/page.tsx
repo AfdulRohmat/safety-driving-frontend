@@ -54,7 +54,7 @@ export const groupRoles = [
     { label: "Medical Party", value: "ROLE_MEDIC" },
     { label: "KNKT", value: "ROLE_KNKT" },
     { label: "Admin", value: "ROLE_ADMIN_GROUP" },
-] as const
+];
 
 
 const FormSchema = z.object({
