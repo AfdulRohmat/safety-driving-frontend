@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -32,9 +33,7 @@ import {
 } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState } from "react"
 import { fetchApi } from "@/utils/api"
-
 
 const FormSchema = z.object({
     otp: z.string().min(6, {
@@ -42,8 +41,7 @@ const FormSchema = z.object({
     }),
 })
 
-
-export default function AktivasiAkun() {
+function AktivasiAkunContent() {
     const [loading, setLoading] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams();
@@ -96,7 +94,7 @@ export default function AktivasiAkun() {
             toast({
                 title: "Kode Aktivasi Akun berhasil dikrim ulang. Silahkan cek email anda",
             })
-            
+
         } else {
             setLoading(false)
             toast({
@@ -152,5 +150,13 @@ export default function AktivasiAkun() {
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+export default function AktivasiAkun() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AktivasiAkunContent />
+        </Suspense>
     )
 }
