@@ -47,14 +47,6 @@ import Cookies from 'js-cookie';
 import { fetchApi } from "@/utils/api"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export const groupRoles = [
-    { label: "Driver", value: "ROLE_DRIVER" },
-    { label: "Company", value: "ROLE_COMPANY" },
-    { label: "Family", value: "ROLE_FAMILY" },
-    { label: "Medical Party", value: "ROLE_MEDIC" },
-    { label: "KNKT", value: "ROLE_KNKT" },
-    { label: "Admin", value: "ROLE_ADMIN_GROUP" },
-];
 
 
 const FormSchema = z.object({
@@ -80,6 +72,15 @@ export default function AddGroupMember() {
     const groupId = Cookies.get('groupId')
 
     const router = useRouter()
+
+    const groupRoles = [
+        { label: "Driver", value: "ROLE_DRIVER" },
+        { label: "Company", value: "ROLE_COMPANY" },
+        { label: "Family", value: "ROLE_FAMILY" },
+        { label: "Medical Party", value: "ROLE_MEDIC" },
+        { label: "KNKT", value: "ROLE_KNKT" },
+        { label: "Admin", value: "ROLE_ADMIN_GROUP" },
+    ];
 
     const searchUsers = async (query: string) => {
         setLoading(true);
