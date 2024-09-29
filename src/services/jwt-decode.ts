@@ -9,7 +9,7 @@ export const customJwtDecode = () => {
         data = jwtDecode(token);
     }
 
-    console.log("jwtDecode: ", data)
+    // console.log("jwtDecode: ", data)
 
     return data;
 }

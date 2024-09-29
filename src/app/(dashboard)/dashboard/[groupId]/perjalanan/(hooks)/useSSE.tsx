@@ -10,12 +10,18 @@ export function useSSE(url: string) {
         eventSourceRef.current = eventSource;
 
         eventSource.onmessage = (event) => {
-            const newData = JSON.parse(event.data);
-            setData(newData);
+            try {
+                const newData = JSON.parse(event.data); // Parse incoming data
+                setData(newData);
+            } catch (error) {
+                console.error('Failed to parse SSE data:', error);
+            }
         };
+
 
         eventSource.onerror = (error) => {
             console.error('EventSource failed:', error);
+            console.error('EventSource readyState:', eventSource.readyState);
             eventSource.close();
         };
 

@@ -46,17 +46,17 @@ export const laporanColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] => 
   },
   {
     header: 'Jadwal Perjalanan',
-    accessorFn: (row) => formatDate(row.jadwalPerjalanan),
+    accessorFn: (row) => formatDate(row.jadwal_perjalanan),
     id: 'jadwalPerjalanan',
   },
   {
     header: 'Alamat Awal',
-    accessorFn: (row) => row.alamatAwal,
+    accessorFn: (row) => row.alamat_awal,
     id: 'alamatAwal',
   },
   {
     header: 'Alamat Tujuan',
-    accessorFn: (row) => row.alamatTujuan,
+    accessorFn: (row) => row.alamat_tujuan,
     id: 'alamatTujuan',
   },
   {
@@ -66,22 +66,22 @@ export const laporanColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] => 
   },
   {
     header: 'Dimulai Pada',
-    accessorFn: (row) => formatDateFns(row.dimulaiPada) + " WIB",
+    accessorFn: (row) => formatDateFns(row.dimulai_pada) + " WIB",
     id: 'dimulaiPada',
   },
   {
     header: 'Diakhiri Pada',
-    accessorFn: (row) => formatDateFns(row.diakhiriPada) + " WIB",
+    accessorFn: (row) => formatDateFns(row.diakhiri_pada) + " WIB",
     id: 'diakhiriPada',
   },
   {
     header: 'Durasi Perjalanan',
-    accessorFn: (row) => formatDecimalMinutes(row.durasiPerjalanan),
+    accessorFn: (row) => formatDecimalMinutes(row.durasi_perjalanan),
     id: 'durasiPerjalanan',
   },
   {
-    id: "tripToken",
-    accessorKey: "tripToken",
+    id: "trip_token",
+    accessorKey: "trip_token",
     header: 'Action',
     cell: ({ row }) => {
 
@@ -89,7 +89,7 @@ export const laporanColumns = (userJoinedGrup: any): ColumnDef<Perjalanan>[] => 
         const token = Cookies.get('token');
 
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trips/export-data-trip?tripToken=${row.getValue("tripToken")}`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trips/export-data-trip?tripToken=${row.getValue("trip_token")}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

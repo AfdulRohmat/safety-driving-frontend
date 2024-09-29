@@ -54,9 +54,6 @@ export default function DetailPerjalanan() {
     const originRef: any = useRef()
     const destiantionRef: any = useRef()
 
-    const dataTripMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-trip?tripToken=${params.perjalananId}`);
-    const dataFaceMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-face?tripToken=${params.perjalananId}`);
-
     const dataMonitoringTripColumns = monitoringTripColumns();
 
     const { isLoaded } = useJsApiLoader({
@@ -96,6 +93,36 @@ export default function DetailPerjalanan() {
         destiantionRef.current.value = ''
     }
 
+    useEffect(() => {
+        async function getDetailTrip() {
+            // params.perjalananId
+            setLoading(true);
+            const { data } = await fetchApi(`/trips/detail?tripToken=${params.perjalananId}`, {
+                method: "POST",
+            })
+
+            if (data) {
+                setDetailTrip(data);
+                setCenterPosition({
+                    lat: parseFloat(data.latitudeAwal),
+                    lng: parseFloat(data.longitudeAwal)
+                })
+                setDestinationPosition({
+                    lat: parseFloat(data.latitudeTujuan),
+                    lng: parseFloat(data.longitudeTujuan)
+                })
+            }
+            setLoading(false);
+        }
+
+        getDetailTrip()
+    }, []);
+
+    const dataTripMonitoring: any = { 'data': [] };
+    const dataFaceMonitoring: any = { 'data': [] };
+    // const dataTripMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-trip?tripToken=${params.perjalananId}`);
+    // const dataFaceMonitoring = useSSE(`${process.env.NEXT_PUBLIC_API_URL}/trips/monitoring-face?tripToken=${params.perjalananId}`);
+
     async function doEndMonitoring() {
         const { data } = await fetchApi("/trips/change-status", {
             method: "POST",
@@ -105,8 +132,8 @@ export default function DetailPerjalanan() {
             }
         })
         if (data) {
-            dataTripMonitoring.closeConnection();
-            dataFaceMonitoring.closeConnection();
+            // dataTripMonitoring.closeConnection();
+            // dataFaceMonitoring.closeConnection();
 
             toast({
                 title: "Perjalanan Berakhir",
@@ -119,31 +146,6 @@ export default function DetailPerjalanan() {
             })
         }
     }
-
-    async function getDetailTrip() {
-        // params.perjalananId
-        setLoading(true);
-        const { data } = await fetchApi(`/trips/detail?tripToken=${params.perjalananId}`, {
-            method: "POST",
-        })
-
-        if (data) {
-            setDetailTrip(data);
-            setCenterPosition({
-                lat: parseFloat(data.latitudeAwal),
-                lng: parseFloat(data.longitudeAwal)
-            })
-            setDestinationPosition({
-                lat: parseFloat(data.latitudeTujuan),
-                lng: parseFloat(data.longitudeTujuan)
-            })
-        }
-        setLoading(false);
-    }
-
-    useEffect(() => {
-        getDetailTrip()
-    }, []);
 
     useEffect(() => {
         if (dataTripMonitoring.data.length !== 0) {

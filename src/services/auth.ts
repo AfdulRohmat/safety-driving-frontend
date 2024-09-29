@@ -2,13 +2,7 @@
 import Cookies from 'js-cookie';
 import { NextRequest, NextResponse } from 'next/server';
 
-interface LoginResponse {
-    username: string;
-    email: string;
-    accessToken: string;
-}
-
-export const login = async (username: string, password: string): Promise<{ status: any, data: any, error: any }> => {
+export const login = async (email: string, password: string): Promise<{ status: any, data: any, error: any }> => {
 
     let status = null
     let data = null
@@ -20,7 +14,7 @@ export const login = async (username: string, password: string): Promise<{ statu
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ email: email, password }),
         });
 
         const dataResponse = await response.json();

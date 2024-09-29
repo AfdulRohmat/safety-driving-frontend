@@ -59,7 +59,7 @@ export default function Sidebar() {
     ]
 
     return (
-        <div className="flex flex-col w-[300px] border-r  p-4 h-screen">
+        <div className="flex flex-col w-[300px] border-r p-4 h-screen">
             {/* TITLE */}
             <div className="font-bold text-2xl">Safety Driving</div>
             {/* <p>{groupId}</p> */}
